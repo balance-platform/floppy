@@ -3,20 +3,7 @@ defmodule Floppy do
   Documentation for `Floppy`.
   """
 
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Floppy.hello()
-      :world
-
-  """
-  def hello do
-    :world
-  end
-
-  defmacro floppy_assert(result) do
+  defmacro assert(result, _options \\ []) do
     quote do
       env = __ENV__
 
@@ -28,7 +15,7 @@ defmodule Floppy do
 
       result = inspect(unquote(result), pretty: true, limit: :infinity)
 
-      if !File.exists?(path) || System.get_env("FLOPPY") == "REWRITE" do
+      if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
         File.mkdir_p!(dir)
 
         File.write!(dir <> "/" <> to_string(file) <> ".floppy", result)
