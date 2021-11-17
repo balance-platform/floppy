@@ -13,10 +13,17 @@ defmodule FloppyTest do
   end
 
   test "list check" do
-    list =
+    list_1024 =
       0..1024
       |> Enum.to_list()
 
-    Floppy.assert(list)
+    Floppy.assert(list_1024)
+    Floppy.assert([])
+  end
+
+  test "nil check" do
+    a = nil
+    Floppy.assert(nil)
+    Floppy.assert(a)
   end
 end
