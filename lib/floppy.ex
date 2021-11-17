@@ -23,13 +23,13 @@ defmodule Floppy do
       if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
         File.mkdir_p!(dir)
 
-        File.write!(path, result)
+        File.write!(path, :erlang.term_to_binary(result))
 
         assert true
       else
         previous_result = File.read!(path)
 
-        assert previous_result == result
+        assert :erlang.binary_to_term(previous_result) == result
       end
     end
   end
