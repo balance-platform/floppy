@@ -18,7 +18,7 @@ defmodule Floppy do
         (dir <> "/" <> to_string(file) <> inspect(unquote(name)) <> ".floppy")
         |> String.replace([" ", "\""], "_")
 
-      result = inspect(unquote(result), pretty: true, limit: :infinity)
+      result = unquote(result)
 
       if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
         File.mkdir_p!(dir)
