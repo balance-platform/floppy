@@ -1,14 +1,8 @@
 defmodule Floppy.Check do
   defmacro check(path, result, decode_fun) do
-    quote do
-      path = unquote(path)
-      result = unquote(result)
-      decode_fun = unquote(decode_fun)
-      dir = Path.dirname(path)
-
+    quote bind_quoted: [path: path, result: result, decode_fun: decode_fun] do
       if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
-        File.mkdir_p!(dir)
-
+        File.mkdir_p!(Path.dirname(path))
         File.write!(path, result)
 
         assert true
