@@ -7,21 +7,10 @@ defmodule Floppy do
     name = get_name(binding())
 
     quote do
+      require Floppy.Check
       path = Floppy.path_for(__ENV__, unquote(name), ".json")
-      dir = Path.dirname(path)
       result = Jason.encode!(unquote(result), pretty: true)
-
-      if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
-        File.mkdir_p!(dir)
-
-        File.write!(path, result)
-
-        assert true
-      else
-        previous_result = File.read!(path)
-
-        assert Jason.decode!(previous_result) == Jason.decode!(result)
-      end
+      Floppy.Check.check(path, result, &Jason.decode!/1)
     end
   end
 
@@ -29,21 +18,10 @@ defmodule Floppy do
     name = get_name(binding())
 
     quote do
+      require Floppy.Check
       path = Floppy.path_for(__ENV__, unquote(name), ".floppy")
-      dir = Path.dirname(path)
       result = :erlang.term_to_binary(unquote(result))
-
-      if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
-        File.mkdir_p!(dir)
-
-        File.write!(path, result)
-
-        assert true
-      else
-        previous_result = File.read!(path)
-
-        assert :erlang.binary_to_term(previous_result) == :erlang.binary_to_term(result)
-      end
+      Floppy.Check.check(path, result, &:erlang.binary_to_term/1)
     end
   end
 
