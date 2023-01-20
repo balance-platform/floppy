@@ -31,18 +31,18 @@ defmodule Floppy do
     quote do
       path = Floppy.path_for(__ENV__, unquote(name), ".floppy")
       dir = Path.dirname(path)
-      result = unquote(result)
+      result = :erlang.term_to_binary(unquote(result))
 
       if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
         File.mkdir_p!(dir)
 
-        File.write!(path, :erlang.term_to_binary(result))
+        File.write!(path, result)
 
         assert true
       else
         previous_result = File.read!(path)
 
-        assert :erlang.binary_to_term(previous_result) == result
+        assert :erlang.binary_to_term(previous_result) == :erlang.binary_to_term(result)
       end
     end
   end
