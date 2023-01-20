@@ -14,6 +14,17 @@ defmodule Floppy do
     end
   end
 
+  defmacro json_plain_assert(result, options \\ []) do
+    name = get_name(binding())
+
+    quote do
+      require Floppy.Check
+      path = Floppy.path_for(__ENV__, unquote(name), ".json")
+      result = Jason.encode!(unquote(result), pretty: false)
+      Floppy.Check.check(path, result, &Jason.decode!/1)
+    end
+  end
+
   defmacro assert(result, options \\ []) do
     name = get_name(binding())
 

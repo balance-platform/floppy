@@ -20,4 +20,13 @@ defmodule FloppyJsonTest do
     Floppy.json_assert(list_1024)
     Floppy.json_assert([])
   end
+
+  test "json_plain_assert" do
+    list_1024 =
+      0..1024
+      |> Enum.to_list()
+
+    Floppy.json_plain_assert(list_1024)
+    Floppy.json_plain_assert([])
+  end
 end
