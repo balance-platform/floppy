@@ -40,8 +40,8 @@ defmodule Floppy do
     dir = String.replace(env.file, ".exs", "")
     {file, _} = env.function
 
-    (dir <> "/" <> to_string(file) <> inspect(varname) <> ext)
-    |> String.replace([" ", "\""], "_")
+    filename = [to_string(file), varname] |> Enum.filter(&(&1 != "")) |> Enum.join("_")
+    Path.join(dir, filename <> ext) |> String.replace(" ", "_")
   end
 
   defp get_name(bindings) do
