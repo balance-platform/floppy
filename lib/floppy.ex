@@ -7,31 +7,21 @@ defmodule Floppy do
     name = get_name(binding())
 
     quote do
-      env = __ENV__
-
-      dir = String.replace(env.file, ".exs", "")
-
-      {file, _} = env.function
-      name = unquote(name)
-
-      path =
-        (dir <> "/" <> to_string(file) <> inspect(unquote(name)) <> ".json")
-        |> String.replace(["\""], "")
-        |> String.replace([" "], "_")
-
+      require Floppy.Check
+      path = Floppy.path_for(__ENV__, unquote(name), ".json")
       result = Jason.encode!(unquote(result), pretty: true)
+      Floppy.Check.check(path, result, &Jason.decode!/1)
+    end
+  end
 
-      if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
-        File.mkdir_p!(dir)
+  defmacro json_plain_assert(result, options \\ []) do
+    name = get_name(binding())
 
-        File.write!(path, result)
-
-        assert true
-      else
-        previous_result = File.read!(path)
-
-        assert Jason.decode!(previous_result) == Jason.decode!(result)
-      end
+    quote do
+      require Floppy.Check
+      path = Floppy.path_for(__ENV__, unquote(name), ".json")
+      result = Jason.encode!(unquote(result), pretty: false)
+      Floppy.Check.check(path, result, &Jason.decode!/1)
     end
   end
 
@@ -39,31 +29,19 @@ defmodule Floppy do
     name = get_name(binding())
 
     quote do
-      env = __ENV__
-
-      dir = String.replace(env.file, ".exs", "")
-
-      {file, _} = env.function
-      name = unquote(name)
-
-      path =
-        (dir <> "/" <> to_string(file) <> inspect(unquote(name)) <> ".floppy")
-        |> String.replace([" ", "\""], "_")
-
-      result = unquote(result)
-
-      if !File.exists?(path) || System.get_env("FLOPPY_MODE") == "rewrite" do
-        File.mkdir_p!(dir)
-
-        File.write!(path, :erlang.term_to_binary(result))
-
-        assert true
-      else
-        previous_result = File.read!(path)
-
-        assert :erlang.binary_to_term(previous_result) == result
-      end
+      require Floppy.Check
+      path = Floppy.path_for(__ENV__, unquote(name), ".floppy")
+      result = :erlang.term_to_binary(unquote(result))
+      Floppy.Check.check(path, result, &:erlang.binary_to_term/1)
     end
+  end
+
+  def path_for(env, varname, ext) do
+    dir = String.replace(env.file, ".exs", "")
+    {file, _} = env.function
+
+    filename = [to_string(file), varname] |> Enum.filter(&(&1 != "")) |> Enum.join("_")
+    Path.join(dir, filename <> ext) |> String.replace(" ", "_")
   end
 
   defp get_name(bindings) do
