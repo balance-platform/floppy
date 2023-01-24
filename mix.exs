@@ -2,7 +2,7 @@ defmodule Floppy.MixProject do
   use Mix.Project
 
   @source_url "https://github.com/balance-platform/floppy"
-  @version "0.3.0"
+  @version "0.3.1"
 
   def project do
     [
@@ -48,8 +48,7 @@ defmodule Floppy.MixProject do
 
   defp description do
     """
-    Elixir client for ClickHouse, a fast open-source Online Analytical
-    Processing (OLAP) database management system.
+    Floppy is library for easy test maps and jsons objects, when they change
     """
   end
 
