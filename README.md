@@ -32,7 +32,7 @@ If results are equal, test passed. Otherwise you have to change test or accept n
 ```elixir
 def deps do
   [
-    {:floppy, "~> 0.1.0"}
+    {:floppy, "~> 0.3.0", only: [:test]}
   ]
 end
 ```
